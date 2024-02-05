@@ -1,4 +1,5 @@
 import Users from "../models/user.js";
+import bcrypt from "bcrypt";
 
 export const getAllUsers = async (req, res) => {
   try {
@@ -11,9 +12,23 @@ export const getAllUsers = async (req, res) => {
 
 export const createUser = async (req, res) => {
   const bodyData = req.body;
-  const newUser = Users(bodyData);
 
   try {
+    // Check for existing user with the same email
+    const existingUser = await Users.findOne({ email: bodyData.email });
+    if (existingUser) {
+      res.status(409).json({ error: "Email already exists" });
+      return;
+    }
+
+    // Hash the password using a secure algorithm (e.g., bcrypt)
+    const saltRounds = 10; // Adjust salt rounds as needed
+    const hashedPassword = await bcrypt.hash(bodyData.password, saltRounds);
+
+    // Update bodyData with the hashed password
+    bodyData.password = hashedPassword;
+
+    const newUser = Users(bodyData);
     const message = await newUser.save();
     res.status(201).json(message);
   } catch (error) {
