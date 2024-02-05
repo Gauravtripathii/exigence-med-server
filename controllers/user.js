@@ -45,3 +45,24 @@ export const getUserById = async (req, res) => {
     res.status(404).json({ error: error.message });
   }
 };
+
+export const deteleUserById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const userData = await Users.findByIdAndDelete(id);
+    res.status(200).json(userData);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+};
+
+export const updateUser = async (req, res) => {
+  const { id } = req.params;
+  const bodyData = req.body;
+  try {
+    const userData = await Users.findByIdAndUpdate(id, bodyData);
+    res.status(200).json(userData);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+};
