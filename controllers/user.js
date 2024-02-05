@@ -59,6 +59,15 @@ export const deteleUserById = async (req, res) => {
 export const updateUser = async (req, res) => {
   const { id } = req.params;
   const bodyData = req.body;
+
+  if (bodyData.password) {
+    const saltRounds = 10;
+    bodyData.password = await bcrypt.hash(bodyData.password, saltRounds);
+  }
+
+  const update = { ...bodyData };
+  const userData = await Users.findByIdAndUpdate(id, update, { new: true });
+  res.status(200).json(userData);
   try {
     const userData = await Users.findByIdAndUpdate(id, bodyData);
     res.status(200).json(userData);
