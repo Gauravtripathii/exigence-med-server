@@ -35,3 +35,13 @@ export const createUser = async (req, res) => {
     res.status(409).json({ error: error.message });
   }
 };
+
+export const getUserById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const userData = await Users.findById(id);
+    res.status(200).json(userData);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+};
