@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use(cors());
 
 // API routes
-app.use("/user", userRouter);
+app.use("/api/v1/user", userRouter);
 
 const CONNECTION_URL = "mongodb://localhost:27017/";
 const PORT = process.env.PORT || 5000;
