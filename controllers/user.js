@@ -14,18 +14,15 @@ export const createUser = async (req, res) => {
   const bodyData = req.body;
 
   try {
-    // Check for existing user with the same email
     const existingUser = await Users.findOne({ email: bodyData.email });
     if (existingUser) {
       res.status(409).json({ error: "Email already exists" });
       return;
     }
 
-    // Hash the password using a secure algorithm (e.g., bcrypt)
-    const saltRounds = 10; // Adjust salt rounds as needed
+    const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(bodyData.password, saltRounds);
 
-    // Update bodyData with the hashed password
     bodyData.password = hashedPassword;
 
     const newUser = Users(bodyData);
