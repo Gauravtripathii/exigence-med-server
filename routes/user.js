@@ -1,4 +1,14 @@
-import { getAllUsers, createUser, getUserById, deteleUserById, updateUser, getMedicalRecords, getDoctorDetails } from "../controllers/user.js";
+import {
+  getAllUsers,
+  createUser,
+  getUserById,
+  deteleUserById,
+  updateUser,
+  getMedicalRecords,
+  getDoctorDetails,
+  createMedicalRecord,
+  setDoctorDetails,
+} from "../controllers/user.js";
 
 import express from "express";
 const router = express.Router();
@@ -9,6 +19,8 @@ router.post("/", createUser);
 router.delete("/:id", deteleUserById);
 router.patch("/:id", updateUser);
 
+router.post("/medical-record/:id", createMedicalRecord);
+router.post("/doctor/:id", setDoctorDetails);
 router.get("/medical-record/:id", getMedicalRecords);
 router.get("/doctor/:id", getDoctorDetails);
 
