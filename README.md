@@ -11,3 +11,4 @@
 7. **GET** medical record of patient : /api/v1/user/medical-record/\:id
 8. **POST** doctor's details : /api/v1/user/doctor/\:id
 9. **GET** doctor's details : /api/v1/user/doctor/\:id
+10. same for **PATCH** and **DELETE** of Medical Record and DoctorDetails
