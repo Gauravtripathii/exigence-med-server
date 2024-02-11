@@ -13,7 +13,8 @@ app.use(cors());
 // API routes
 app.use("/api/v1/user", userRouter);
 
-const CONNECTION_URL = "mongodb://localhost:27017/";
+const CONNECTION_URL =
+  "mongodb+srv://golaithAdmins:newpassword@cluster0.zmupedm.mongodb.net/?retryWrites=true&w=majority";
 const PORT = process.env.PORT || 5000;
 
 mongoose.set("strictQuery", false);

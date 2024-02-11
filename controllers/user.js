@@ -93,18 +93,15 @@ export const createMedicalRecord = async (req, res) => {
 };
 
 export const getMedicalRecords = async (req, res) => {
-  const { id } = req.params;
+  const { userId } = req.params;
   try {
-    const user = await Users.findById(id);
-    if (user.type !== "patient") {
-      return res
-        .status(403)
-        .json({ error: "Access is allowed only for patients" });
+    const medicalRecordData = await MedicalRecordModel.find({ userId });
+    if (!medicalRecordData || medicalRecordData.length === 0) {
+      return res.status(404).json({ error: "No medical records found for this user" });
     }
-    const medicalRecordData = await MedicalRecordModel.find({ userId: id });
     res.status(200).json(medicalRecordData);
   } catch (error) {
-    res.status(404).json({ error: error.message });
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -113,10 +110,10 @@ export const setDoctorDetails = async (req, res) => {
   const bodyData = req.body;
   try {
     const user = await Users.findById(id);
-    if (user.type !== "patient") {
+    if (user.type !== "doctor") {
       return res
         .status(403)
-        .json({ error: "Access is allowed only for patients" });
+        .json({ error: "Access is allowed only for doctors" });
     }
     const doctorDetailsData = await DoctorDetailsModel.create(bodyData);
     res.status(201).json(doctorDetailsData);
@@ -126,17 +123,88 @@ export const setDoctorDetails = async (req, res) => {
 };
 
 export const getDoctorDetails = async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const doctorData = await DoctorDetailsModel.find({ userId });
+    if (!doctorData || doctorData.length === 0) {
+      return res.status(404).json({ error: "No info for this doctor" });
+    }
+    res.status(200).json(doctorData);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const updateMedicalRecord = async (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+  try {
+    const medicalRecord = await MedicalRecordModel.findById(id);
+    if (!medicalRecord) {
+      return res.status(404).json({ error: "Medical record not found" });
+    }
+    const user = await Users.findById(medicalRecord.userId);
+    if (user.type !== "patient") {
+      return res.status(403).json({ error: "Access is allowed only for patients" });
+    }
+    const updatedMedicalRecord = await MedicalRecordModel.findByIdAndUpdate(id, updates, { new: true });
+    res.status(200).json(updatedMedicalRecord);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const updateDoctorDetails = async (req, res) => {
+  const { id } = req.params;
+  const updates = req.body;
+  try {
+    const doctorDetails = await DoctorDetailsModel.findById(id);
+    if (!doctorDetails) {
+      return res.status(404).json({ error: "Doctor details not found" });
+    }
+    const user = await Users.findById(doctorDetails.userId);
+    if (user.type !== "doctor") {
+      return res.status(403).json({ error: "Access is allowed only for doctors" });
+    }
+    const updatedDoctorDetails = await DoctorDetailsModel.findByIdAndUpdate(id, updates, { new: true });
+    res.status(200).json(updatedDoctorDetails);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const deleteMedicalRecord = async (req, res) => {
   const { id } = req.params;
   try {
-    const user = await Users.findById(id);
-    if (user.type !== "doctor") {
-      return res
-        .status(403)
-        .json({ error: "Access is allowed only for doctors" });
+    const medicalRecord = await MedicalRecordModel.findById(id);
+    if (!medicalRecord) {
+      return res.status(404).json({ error: "Medical record not found" });
     }
-    const doctorDetailsData = await DoctorDetailsModel.findById(id);
-    res.status(200).json(doctorDetailsData);
+    const user = await Users.findById(medicalRecord.userId);
+    if (user.type !== "patient") {
+      return res.status(403).json({ error: "Access is allowed only for patients" });
+    }
+    await MedicalRecordModel.findByIdAndDelete(id);
+    res.status(200).json({ message: "Medical record deleted successfully" });
   } catch (error) {
-    res.status(404).json({ error: error.message });
+    res.status(500).json({ error: error.message });
+  }
+};
+
+export const deleteDoctorDetails = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const doctorDetails = await DoctorDetailsModel.findById(id);
+    if (!doctorDetails) {
+      return res.status(404).json({ error: "Doctor details not found" });
+    }
+    const user = await Users.findById(doctorDetails.userId);
+    if (user.type !== "doctor") {
+      return res.status(403).json({ error: "Access is allowed only for doctors" });
+    }
+    await DoctorDetailsModel.findByIdAndDelete(id);
+    res.status(200).json({ message: "Doctor details deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
