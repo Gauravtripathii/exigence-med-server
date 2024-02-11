@@ -1,4 +1,6 @@
 import Users from "../models/user.js";
+import MedicalRecordModel from "../models/MedicalRecord.js";
+import DoctorDetailsModel from "../models/DoctorDetails.js";
 import bcrypt from "bcrypt";
 
 export const getAllUsers = async (req, res) => {
@@ -68,6 +70,38 @@ export const updateUser = async (req, res) => {
   try {
     const userData = await Users.findByIdAndUpdate(id, bodyData);
     res.status(200).json(userData);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+};
+
+export const getMedicalRecords = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await Users.findById(id);
+    if (user.type !== "patient") {
+      return res
+        .status(403)
+        .json({ error: "Access is allowed only for patients" });
+    }
+    const medicalRecordData = await MedicalRecordModel.find({ userId: id });
+    res.status(200).json(medicalRecordData);
+  } catch (error) {
+    res.status(404).json({ error: error.message });
+  }
+};
+
+export const getDoctorDetails = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await Users.findById(id);
+    if (user.type !== "doctor") {
+      return res
+        .status(403)
+        .json({ error: "Access is allowed only for doctors" });
+    }
+    const doctorDetailsData = await DoctorDetailsModel.findById(id);
+    res.status(200).json(doctorDetailsData);
   } catch (error) {
     res.status(404).json({ error: error.message });
   }
