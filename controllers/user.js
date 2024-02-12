@@ -107,7 +107,7 @@ export const getMedicalRecords = async (req, res) => {
 
 export const setDoctorDetails = async (req, res) => {
   const { id } = req.params;
-  const bodyData = req.body;
+  const bodyData = { ...req.body, userId: id };
   try {
     const user = await Users.findById(id);
     if (user.type !== "doctor") {
